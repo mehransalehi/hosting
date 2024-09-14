@@ -88,7 +88,7 @@ volumes:
 [7] = Your Domain
 
 
-## More info about mainserver configs
+## More info about mailserver configs
 
 [postfix-dovecot-dkim](https://github.com/h0perium/postfix-dovecot-dkim) - DKIM And Other Configs
 
