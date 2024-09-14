@@ -1,7 +1,7 @@
 
 # Hosting Websites 
 
-Docker base hosting that use 5 images : Apache webserver, MariaDB database, Adminer a web gui to manage dadabase, postfix main server and roundcube a web gui to manage emails.
+Docker base hosting uses 5 images: Apache web server, MariaDB database, Adminer a web GUI to manage database, postfix mail server, and Roundcube a web gui to manage emails.
 
 ```sh
 version: '3'
