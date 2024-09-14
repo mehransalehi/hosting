@@ -14,7 +14,7 @@ services:
     image: mariadb:latest
     restart: always
     environment:
-      MARIADB_ROOT_PASSWORD: divaneh1452
+      MARIADB_ROOT_PASSWORD: DATABASE_PASS
     volumes:
       - /root/hosting/database/files:/var/lib/mysql
       - /root/hosting/database/configs:/etc/mysql/conf.d
@@ -40,7 +40,7 @@ services:
     environment:
       MTP_HOST: webiox.net
       INIT_EMAIL: info@webiox.net
-      INIT_EMAIL_PASS: divaneh1452
+      INIT_EMAIL_PASS: DATABASE_PASS
       MTP_DESTINATION: '6a6a6586e71d, localhost.localdomain, localhost'
   roundcube:
     depends_on:
