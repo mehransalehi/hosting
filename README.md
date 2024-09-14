@@ -74,12 +74,19 @@ volumes:
 ## Configs
 
 [1] = Path for apache config
+
 [2] = Path for virtual host files for each website
+
 [3] = Path for php config
+
 [4] , [8] , [9] = Password for database
+
 [5] = Path for database file that you can backup
+
 [6] = Path for mariaDB config
+
 [7] = Your Domain
+
 
 ## More info about mainserver configs
 
