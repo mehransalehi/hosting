@@ -112,7 +112,7 @@ This project sets up a multi-service application using Docker, including an Ngin
 
 - **Image:** `adminer:latest`
 - **Ports:** `8080:8080`
-- **Access:** Adminer is accessible at [http://localhost:8080](http://localhost:8080).
+- **Access:** Adminer is accessible at [https://adminer.domain-a.net](adminer.domain-a.net).
 
 ### Customization
 - No major customization needed; adjust the port if necessary.
@@ -144,7 +144,7 @@ This project sets up a multi-service application using Docker, including an Ngin
 - **Image:** `h0perium/roundcube`
 - **Ports:** `8880:80`
 - **Depends on:** `database`, `mailserver`
-- **Access:** Roundcube is accessible at [http://localhost:8880](http://localhost:8880).
+- **Access:** Roundcube is accessible at [https://webmail.domain-a.net](https://webmail.domain-a.net).
 - **Environment Variables:**
   - `ROUNDCUBEMAIL_DEFAULT_HOST`: The mail server hostname (e.g., `mailserver`).
   - `ROUNDCUBEMAIL_SMTP_SERVER`: SMTP server (e.g., `mailserver`).
