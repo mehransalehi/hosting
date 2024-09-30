@@ -14,14 +14,14 @@ This repository contains a Docker Compose file that sets up a web stack consisti
 
 - [Docker](https://www.docker.com/get-started)
 - [Docker Compose](https://docs.docker.com/compose/install/)
-- [h0perium/postfix-dovecot-dkim Details].(https://github.com/h0perium/postfix-dovecot-dkim)
+- [h0perium/postfix-dovecot-dkim Details](https://github.com/h0perium/postfix-dovecot-dkim)
 
 ## Getting Started
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/your-repo-name.git
-   cd your-repo-name
+   git clone https://github.com/mehransalehi/hosting.git
+   cd hosting
 1. **Update environment variables:** 
 The services for MariaDB, Mailserver, and Roundcube use environment variables for configuration. Create a .env file at the root of the project and include the following variables:
    ```bash
