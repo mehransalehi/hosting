@@ -1,63 +1,118 @@
-version: '3'
+version: "3"
 services:
-  apache:
-    image: php:7.4-apache
-    restart: always
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy
     ports:
-      - 80:80
-      - 443:443
+      - "80:80"    # HTTP Port
+      - "443:443"  # HTTPS Port
     volumes:
-      - /root/hosting/websites/apache-configs:/etc/apache2
-      - /root/hosting/websites/files:/var/www
-      - /root/hosting/websites/php-configs:/usr/local/etc/php
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro  # Nginx configuration file
+      - ./nginx/certs:/etc/nginx/certs:ro            # For SSL certificates
+      - ./nginx/html:/usr/share/nginx/html           # Default Nginx HTML files
+    depends_on:
+      - apache1
+      - apache2
+      - database   # Add database service here if you want to ensure it's up before Nginx
+    networks:
+      - proxy-network
+
+  # Apache Server for Domain A
+  apache1:
+    image: php:7.4-apache
+    container_name: apache-webiox
+    volumes:
+      - ./websites/webiox/html:/var/www/html
+      - ./websites/webiox/apache-configs:/etc/apache2
+      - ./websites/webiox/php-configs:/usr/local/etc/php
+    networks:
+      - proxy-network
+
+  # Apache Server for Domain B
+  apache2:
+    image: php:7.4-apache
+    container_name: apache-behweb
+    volumes:
+      - ./websites/behweb/html:/var/www/html
+      - ./websites/behweb/apache-configs:/etc/apache2
+      - ./websites/behweb/php-configs:/usr/local/etc/php
+    networks:
+      - proxy-network
+  # MariaDB Database Service
   database:
     image: mariadb:latest
+    container_name: database
     restart: always
     environment:
-      MARIADB_ROOT_PASSWORD: DATABASE_PASS
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}  # Use MYSQL_ROOT_PASSWORD instead of MARIADB_ROOT_PASSWORD
+      MYSQL_DATABASE: mydatabase           # Default database to be created
+      MYSQL_USER: myuser                   # Default user to be created
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}       # User password
     volumes:
-      - /root/hosting/database/files:/var/lib/mysql
-      - /root/hosting/database/configs:/etc/mysql/conf.d
+      - ./database/files:/var/lib/mysql
+      - ./database/configs:/etc/mysql/conf.d
+    networks:
+      - proxy-network
+
+  # Adminer for Database Management
   adminer:
-    image: adminer
+    image: adminer:latest
+    container_name: adminer
     restart: always
     environment:
       ADMINER_DEFAULT_SERVER: database
     ports:
-      - 8080:8080
+      - "8080:8080"  # Adminer will be accessible at http://localhost:8080
+    networks:
+      - proxy-network
+
+  # Mail Server Service
   mailserver:
     image: h0perium/postfix-dovecot-dkim
+    container_name: mailserver
     restart: always
     ports:
-      - 25:25
-      - 993:993
-      - 995:995
-      - 587:587
-      - 143:143
-      - 110:110
+      - "25:25"     # SMTP
+      - "993:993"   # IMAP over SSL
+      - "995:995"   # POP3 over SSL
+      - "587:587"   # SMTP (submission)
+      - "143:143"   # IMAP
+      - "110:110"   # POP3
     volumes:
       - mailserver-storage:/var/mail
     environment:
       MTP_HOST: webiox.net
       INIT_EMAIL: info@webiox.net
-      INIT_EMAIL_PASS: DATABASE_PASS
-      MTP_DESTINATION: '6a6a6586e71d, localhost.localdomain, localhost'
+      INIT_EMAIL_PASS: ${INIT_EMAIL_PASSWORD}
+      MTP_DESTINATION: "6a6a6586e71d, localhost.localdomain, localhost"
+    networks:
+      - proxy-network
+  # Roundcube Webmail
   roundcube:
+    image: h0perium/roundcube
+    container_name: roundcube
     depends_on:
       - database
-    image: h0perium/roundcube
+      - mailserver
     environment:
       ROUNDCUBEMAIL_DEFAULT_HOST: "mailserver"
-      ROUNDCUBEMAIL_SMTP_SERVER:  "mailserver"
+      ROUNDCUBEMAIL_SMTP_SERVER: "mailserver"
       ROUNDCUBEMAIL_SMTP_PORT: 25
       ROUNDCUBEMAIL_DB_TYPE: mysql
       ROUNDCUBEMAIL_DB_HOST: database
       ROUNDCUBEMAIL_DB_USER: root
-      ROUNDCUBEMAIL_DB_PASSWORD: DATABASE_PASS
+      ROUNDCUBEMAIL_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       ROUNDCUBEMAIL_DB_NAME: admin
-
     ports:
-      - 8880:80
+      - "8880:80"  # Roundcube will be accessible at http://localhost:8880
     restart: always
+    networks:
+      - proxy-network
+
 volumes:
-   mailserver-storage:
+  mailserver-storage:
+  
+networks:
+  proxy-network:
+    driver: bridge
